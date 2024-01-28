@@ -1,0 +1,15 @@
+minio-create-disks.sh
+docker-minio.sh
+
+Go to the browser to load the MinIO console using http://localhost:20091, log in using minioadmin and minioadmin for username and password respectively.
+Click on the Create Bucket button and create testbucket123 and generate keys.
+
+Minio tools installed by go: (clash with Midnight Commander if brew used)
+go install github.com/minio/mc@latest
+
+alias:
+/Users/vtg/go/bin/mc alias set myminio http://localhost:20091 akey skey
+/Users/vtg/go/bin/mc admin info myminio
+
+copy file - example:
+/Users/vtg/go/bin/mc cp ./read.me myminio/testbucket123

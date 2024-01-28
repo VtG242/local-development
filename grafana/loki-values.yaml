@@ -1,0 +1,36 @@
+# -- Overrides the chart's computed fullname
+fullnameOverride: loki
+
+# helm install -f loki-values.yaml --namespace default loki grafana/loki-distributed
+loki:
+  # -- Check https://grafana.com/docs/loki/latest/configuration/#schema_config for more info on how to configure schemas
+  schemaConfig:
+    configs:
+    # New TSDB schema below
+    - from: "2024-01-15"
+      index:
+        period: 24h
+        prefix: index_
+      object_store: aws
+      schema: v12
+      store: tsdb
+
+  # -- Check https://grafana.com/docs/loki/latest/configuration/#storage_config for more info on how to configure storages
+  storageConfig:
+    aws:
+      http_config:
+        response_header_timeout: 10s
+      region: MacBook
+      s3: http://minioadmin:minioadmin@host.docker.internal.:20090/loki
+      s3forcepathstyle: true
+    boltdb_shipper:
+      active_index_directory: /var/loki/index
+      cache_location: /var/loki/cache
+      cache_ttl: 168h
+      shared_store: s3
+    filesystem: null
+    # New tsdb-shipper configuration
+    tsdb_shipper:
+      active_index_directory: /var/loki/tsdb-index
+      cache_location: /var/loki/tsdb-cache
+      shared_store: s3

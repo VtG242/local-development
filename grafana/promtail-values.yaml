@@ -1,0 +1,9 @@
+config:
+  clients:
+  - url: http://loki-gateway/loki/api/v1/push
+  snippets:
+    pipelineStages:
+    - docker: {}
+
+configmap:
+  enabled: true
