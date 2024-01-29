@@ -1,7 +1,9 @@
+# helm install -f loki-values.yaml --namespace default loki grafana/loki-distributed
+# helm upgrade -f loki-values.yaml --namespace default loki grafana/loki-distributed
+
 # -- Overrides the chart's computed fullname
 fullnameOverride: loki
 
-# helm install -f loki-values.yaml --namespace default loki grafana/loki-distributed
 loki:
   # -- Check https://grafana.com/docs/loki/latest/configuration/#schema_config for more info on how to configure schemas
   schemaConfig:
@@ -34,3 +36,16 @@ loki:
       active_index_directory: /var/loki/tsdb-index
       cache_location: /var/loki/tsdb-cache
       shared_store: s3
+
+  # used for part of config not handled by template loki.config
+  structuredConfig:
+    querier:
+      # Each `querier` component process runs a number of parallel workers to process queries simultaneously.
+      # You may want to adjust this up or down depending on your resource usage
+      # (more available cpu and memory can tolerate higher values and vice versa),
+      # but we find the most success running at around `16` with tsdb
+      max_concurrent: 16
+    query_scheduler:
+      # the TSDB index dispatches many more, but each individually smaller, requests.
+      # We increase the pending request queue sizes to compensate.
+      max_outstanding_requests_per_tenant: 32768
