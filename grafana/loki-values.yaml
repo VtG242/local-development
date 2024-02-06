@@ -1,8 +1,12 @@
-# helm install -f loki-values.yaml --namespace default loki grafana/loki-distributed
-# helm upgrade -f loki-values.yaml --namespace default loki grafana/loki-distributed
+# helm install -f loki-values.yaml --namespace default loki grafana/loki-distributed --wait (--atomic)
+# helm upgrade -f loki-values.yaml --namespace default loki grafana/loki-distributed --wait (--atomic)
 
 # -- Overrides the chart's computed fullname
 fullnameOverride: loki
+
+# Pod configuration for the index-gateway
+indexGateway:
+  enabled: true
 
 loki:
   # -- Check https://grafana.com/docs/loki/latest/configuration/#schema_config for more info on how to configure schemas
@@ -25,6 +29,7 @@ loki:
       region: MacBook
       s3: http://minioadmin:minioadmin@host.docker.internal.:20090/loki
       s3forcepathstyle: true
+    # not used only for reference as helmchart not ready for tsdb support yet
     boltdb_shipper:
       active_index_directory: /var/loki/index
       cache_location: /var/loki/cache
@@ -35,6 +40,9 @@ loki:
     tsdb_shipper:
       active_index_directory: /var/loki/tsdb-index
       cache_location: /var/loki/tsdb-cache
+      index_gateway_client:
+        # server_address taken from loki.congig.storage_config generated for boltdb_shipper
+        server_address: dns:///loki-index-gateway:9095
       shared_store: s3
 
   # used for part of config not handled by template loki.config
@@ -49,3 +57,21 @@ loki:
       # the TSDB index dispatches many more, but each individually smaller, requests.
       # We increase the pending request queue sizes to compensate.
       max_outstanding_requests_per_tenant: 32768
+
+# Pod configuration for query scheduler
+queryScheduler:
+  # docker desktop k8s - pods could be on same host
+  affinity: |
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - docker-desktop
+  enabled: true
+  # -- Number of replicas for the query-scheduler.
+  # It should be lower than `-querier.max-concurrent` to avoid generating back-pressure in queriers;
+  # it's also recommended that this value evenly divides the latter
+  replicas: 2
