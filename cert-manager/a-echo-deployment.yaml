@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: echo
+  name: echo
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+      - name: echo
+        image: fdeantoni/echo-server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: echo-service
+    namespace: default
+spec:
+    selector:
+      app: echo
+    ports:
+    - name: http
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    # add an annotation indicating the issuer to use.
+    cert-manager.io/cluster-issuer: my-ca-issuer
+  name: echo-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: echo.info
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: echo-service
+            port:
+              number: 9000
+  tls: # < placing a host in the TLS config will determine what ends up in the cert's subjectAltNames
+  - hosts:
+    - echo.info
+    secretName: echo-cert # < cert-manager will store the created certificate in this secret.
