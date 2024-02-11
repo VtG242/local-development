@@ -1,0 +1,35 @@
+# helm upgrade --install -f tempo-values.yaml --namespace default tempo grafana/tempo-distributed
+# minio installed using docker
+minio:
+  enabled: false
+traces:
+  otlp:
+    grpc:
+      enabled: true
+    http:
+      enabled: true
+
+compactor:
+  config:
+    compaction:
+      block_retention: 168h
+  replicas: 1
+  
+# Configuration for the ingester - minimal setting
+ingester:
+  config:
+    replication_factor: 1
+
+storage:
+  trace:
+    # -- The supported storage backends are gcs, s3 and azure, as specified in https://grafana.com/docs/tempo/latest/configuration/#storage
+    backend: s3
+    s3:
+      bucket: tempo
+      endpoint: host.docker.internal.:20090
+      insecure: true
+      # local mimio - store in git is OK
+      access_key: t0qojFdYGe6hx0FxUWFr
+      secret_key: jmcquLqqyIJWBPEAT4ptnqHvuiYAUdQtYtR5AAWP
+      region: MacBook
+

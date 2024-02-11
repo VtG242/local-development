@@ -11,6 +11,25 @@ datasources:
       type: loki
       uid: LOKIPROVISIONED
       url: http://loki-gateway
+    - access: proxy
+      uid: TEMPOPRIVISIONED
+      name: Tempo
+      type: tempo
+      typeName: Tempo
+      url: 'http://tempo-query-frontend:3100'
+      basicAuth: false
+      isDefault: false
+      jsonData:
+        lokiSearch:
+          datasourceUid: LOKIPROVISIONED
+        nodeGraph:
+          enabled: true
+        tracesToLogs:
+          datasourceUid: LOKIPROVISIONED
+          filterByTraceID: true
+          tags:
+            - app
+      editable: true
 grafana.ini:
   alerting:
     enabled: false
