@@ -14,7 +14,7 @@ compactor:
     compaction:
       block_retention: 168h
   replicas: 1
-  
+
 # Configuration for the ingester - minimal setting
 ingester:
   config:
