@@ -52,7 +52,7 @@ loki:
   # used for part of config not handled by template loki.config
   structuredConfig:
     compactor:
-      shared_store: s3
+      shared_store: aws
       retention_enabled: true
       # otherwise pod ends in crashloop (mkdir : no such file or directory)
       working_directory: /var/loki/compactor

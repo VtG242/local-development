@@ -1,0 +1,14 @@
+1) helm upgrade --install -f kps-values.yaml --namespace default kps prometheus-community/kube-prometheus-stack
+2) some scrapes are not functioonal after installation
+- kube proxy:
+$ kubectl edit cm/kube-proxy -n kube-system
+...
+kind: KubeProxyConfiguration
+metricsBindAddress: 0.0.0.0:10249
+...
+$ kubectl delete pod -l k8s-app=kube-proxy -n kube-system
+
+- etcd ?
+- kube-controller-manager ?
+- kube-scheduler ?
+
