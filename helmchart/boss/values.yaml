@@ -45,6 +45,9 @@ service:
   port: 8300
   type: ClusterIP
 
+serviceMonitor:
+  enabled: true
+
 ingress:
   enabled: true
   className: "nginx"
