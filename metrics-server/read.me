@@ -1,0 +1,59 @@
+# https://dev.to/docker/enable-kubernetes-metrics-server-on-docker-desktop-5434
+helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+helm upgrade --install -f metrics-server-values.yaml metrics-server metrics-server/metrics-server -n kube-system
+
+# kubenetes dashboard
+# https://github.com/kubernetes/dashboard/blob/v2.0.0/docs/user/access-control/creating-sample-user.md
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard --set=nginx.enabled=false and --set=cert-manager.enabled=false
+- pro bearer token authentikaci v docker-destop apply - kd-secret.yaml a kd-sa-clusterRoleBinding.yaml
+- pridat secret do service accountu:
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    meta.helm.sh/release-name: kubernetes-dashboard
+    meta.helm.sh/release-namespace: kubernetes-dashboard
+  creationTimestamp: "2024-02-26T11:20:59Z"
+  labels:
+    app.kubernetes.io/instance: kubernetes-dashboard
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kubernetes-dashboard
+    app.kubernetes.io/version: v2.7.0
+    helm.sh/chart: kubernetes-dashboard-6.0.8
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+  resourceVersion: "1058914"
+  uid: 0e98531d-3cd7-447a-8498-e980a9dba6aa
+secrets:
+- name: kubernetes-dashboard
+
+# export POD_NAME=$(kubectl get pods -n kubernetes-dashboard -l "app.kubernetes.io/name=kubernetes-dashboard,app.kubernetes.io/instance=kubernetes-dashboard" -o jsonpath="{.items[0].metadata.name}")
+# kubectl -n kubernetes-dashboard port-forward $POD_NAME 8443:8443
+- dostupny na: https://localhost:8443/
+
+
+# Instalace kebernetes dashboards + metrics-server
+1)
+(mc)[vtg:/Users/VtG/Work/GIT/VtG242/local-development/metrics-server]$ helm upgrade --install -f kd-values.yaml kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+Release "kubernetes-dashboard" does not exist. Installing it now.
+NAME: kubernetes-dashboard
+LAST DEPLOYED: Mon Feb 26 14:28:05 2024
+NAMESPACE: kubernetes-dashboard
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+*********************************************************************************
+*** PLEASE BE PATIENT: kubernetes-dashboard may take a few minutes to install ***
+*********************************************************************************
+
+Get the Kubernetes Dashboard URL by running:
+  export POD_NAME=$(kubectl get pods -n kubernetes-dashboard -l "app.kubernetes.io/name=kubernetes-dashboard,app.kubernetes.io/instance=kubernetes-dashboard" -o jsonpath="{.items[0].metadata.name}")
+  echo https://127.0.0.1:8443/
+  kubectl -n kubernetes-dashboard port-forward $POD_NAME 8443:8443
+
+2) Sa secret not created automatically and also admin permission needed for sa
+# kubectl apply -f kd-secret.yaml
+# kubectl apply -f kd-sa-clusterRoleBinding.yaml
+# kubectl apply -f kd-ingress.yaml

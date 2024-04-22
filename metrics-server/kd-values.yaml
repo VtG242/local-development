@@ -1,0 +1,36 @@
+ingress:
+  enabled: false
+  hosts:
+  # Keep 'localhost' host only if you want to access Dashboard using 'kubectl port-forward ...' on:
+  # https://localhost:8443
+  - localhost
+  #-kubernetes-dashboard.info
+  ingressClassName: nginx
+  pathType: ImplementationSpecific
+  secretName: kubernetes-dashboard-certs
+  issuer:
+    name: my-ca-issuer
+    scope: 'cert-manager.io/cluster-issuer'
+
+## Optional Cert Manager sub-chart configuration
+## Enable this if you don't already have cert-manager enabled on your cluster.
+cert-manager:
+  enabled: false
+  installCRDs: false
+
+## Optional Metrics Server sub-chart configuration
+## Enable this if you don't already have metrics-server enabled on your cluster and
+## want to use it with dashboard metrics-scraper
+## refs:
+##  - https://github.com/kubernetes-sigs/metrics-server
+##  - https://github.com/kubernetes-sigs/metrics-server/tree/master/charts/metrics-server
+metrics-server:
+  enabled: true
+  args:
+    - --kubelet-preferred-address-types=InternalIP
+    - --kubelet-insecure-tls
+
+## Optional Nginx Ingress sub-chart configuration
+## Enable this if you don't already have nginx-ingress enabled on your cluster.
+nginx:
+  enabled: false

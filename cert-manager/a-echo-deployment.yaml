@@ -55,7 +55,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: echo.info
+  - host: echo.mac
     http:
       paths:
       - pathType: Prefix
@@ -67,5 +67,5 @@ spec:
               number: 9000
   tls: # < placing a host in the TLS config will determine what ends up in the cert's subjectAltNames
   - hosts:
-    - echo.info
+    - echo.mac
     secretName: echo-cert # < cert-manager will store the created certificate in this secret.

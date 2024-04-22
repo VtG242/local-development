@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "boss.fullname" . }}-post-install"
+  name: "{{ include "ata-otel-demo.fullname" . }}-post-install"
   labels:
-    {{- include "boss.labels" . | nindent 4 }}
+    {{- include "ata-otel-demo.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-1"

@@ -1,4 +1,6 @@
- openssl verify -CAfile \
+#!/opt/homebrew/bin/bash
+
+openssl verify -CAfile \
 <(kubectl -n cert-manager get secret root-secret -o jsonpath='{.data.ca\.crt}' | base64 -d) \
 <(kubectl -n default get secret test-server-tls -o jsonpath='{.data.tls\.crt}' | base64 -d)
 

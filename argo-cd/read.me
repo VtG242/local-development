@@ -1,0 +1,36 @@
+helm repo add argo https://argoproj.github.io/argo-helm 
+helm upgrade -i argo-cd argo/argo-cd -n argocd --create-namespace
+# with TLS ingress
+helm upgrade -f values-argocd.yaml -i argo-cd argo/argo-cd -n argocd
+
+# change password using cli (set to Argocd123)
+- current password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+- login: argocd login argocd.mac:30443 --grpc-web
+- pass change: argocd account update-password
+- test new login:
+    argocd logout argocd.mac:30443
+
+    (mc)[vtg:/Users/VtG/Work/GIT/VtG242/local-development/argo-cd]$ argocd login argocd.mac:30443 --grpc-web
+    WARNING: server certificate had error: tls: failed to verify certificate: x509: “argocd.mac” certificate is not trusted. Proceed insecurely (y/n)? y
+    Username: admin
+    Password:
+    'admin:login' logged in successfully
+    Context 'argocd.mac:30443' updated
+
+helm show values argo/argo-cd 
+values: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+
+
+API:
+- swagger: https://argocd.mac:30443/swagger.json
+- swagger UI: https://argocd.mac:30443/swagger-ui
+
+curl -k https://argocd.mac:30443/api/v1/session -d $'{"username":"admin","password":"Argocd123"}' -H "Content-Type: application/json"
+{"token":"<TOKEN>"}
+curl -sS -k -H "Authorization: Bearer <TOKEN> " https://argocd.mac:30443/api/v1/settings | jq -r
+
+TEST argocd app:
+kubectl apply -f quarkus-app.yaml
+The app should be  visible in argocdUI a quarkus app is installed in demo namespace:
+kubectl get deploy,service,pods -n demo
+kubectl delete application quarkus-app -n argocd

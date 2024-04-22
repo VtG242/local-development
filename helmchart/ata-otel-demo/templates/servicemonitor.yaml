@@ -3,10 +3,10 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "boss.fullname" . }}
+  name: {{ include "ata-otel-demo.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "boss.labels" . | nindent 4 }}
+    {{- include "ata-otel-demo.labels" . | nindent 4 }}
     # only services with this label are scraped by prometheus (default settings fro KPS helmchart)
     release: kps
 spec:
@@ -19,6 +19,6 @@ spec:
       - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      {{- include "boss.labels" . | nindent 6 }}
+      {{- include "ata-otel-demo.labels" . | nindent 6 }}
 {{ end -}}
 {{ end }}

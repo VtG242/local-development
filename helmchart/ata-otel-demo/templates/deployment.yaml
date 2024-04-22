@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "boss.fullname" . }}
+  name: {{ include "ata-otel-demo.fullname" . }}
   labels:
-    {{- include "boss.labels" . | nindent 4 }}
+    {{- include "ata-otel-demo.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "boss.selectorLabels" . | nindent 6 }}
+      {{- include "ata-otel-demo.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,8 +18,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "boss.labels" . | nindent 8 }}
-	{{- with .Values.podLabels }}
+        {{- include "ata-otel-demo.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "boss.serviceAccountName" . }}
+      serviceAccountName: {{ include "ata-otel-demo.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -36,6 +36,18 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.command }}
+          command:
+          {{- range .Values.command }}
+            - {{ . | quote }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.args }}
+          args:
+          {{- range .Values.args }}
+            - {{ . | quote }}
+          {{- end }}
+        {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -46,7 +58,7 @@ spec:
               port: http
           readinessProbe:
             httpGet:
-              path: /demoapp
+              path: /app
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

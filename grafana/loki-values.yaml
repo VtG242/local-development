@@ -17,7 +17,7 @@ loki:
   schemaConfig:
     configs:
     # New TSDB schema below
-    - from: "2024-01-15"
+    - from: "2024-04-15"
       index:
         period: 24h
         prefix: index_
@@ -30,7 +30,7 @@ loki:
     aws:
       http_config:
         response_header_timeout: 10s
-      region: MacBook
+      region: mac
       s3: http://minioadmin:minioadmin@host.docker.internal.:20090/loki
       s3forcepathstyle: true
     # not used only for reference as helmchart not ready for tsdb support yet

@@ -1,6 +1,19 @@
+alertmanager:
+  enabled: true
+  service:
+    nodePort: 30903
+    type: NodePort
+
 fullnameOverride: kps
+
 grafana:
   enabled: false
+
+# Solve Error:
+# failed to start container "node-exporter": Error response from daemon: path / is mounted on / but it is not a shared or slave mount
+prometheus-node-exporter:
+  hostRootFsMount:
+    enabled: false
 
 ## Deploy a Prometheus instance
 prometheus:
@@ -15,10 +28,4 @@ prometheus:
     scrapeInterval: "15s"
   service:
     nodePort: 30090
-    type: NodePort
-
-alertmanager:
-  enabled: true
-  service:
-    nodePort: 30903
     type: NodePort

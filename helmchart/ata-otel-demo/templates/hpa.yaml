@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "panther-support-tool.fullname" . }}
+  name: {{ include "ata-otel-demo.fullname" . }}
   labels:
-    {{- include "panther-support-tool.labels" . | nindent 4 }}
+    {{- include "ata-otel-demo.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "panther-support-tool.fullname" . }}
+    name: {{ include "ata-otel-demo.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

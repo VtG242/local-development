@@ -1,4 +1,6 @@
-1) helm upgrade --install -f kps-values.yaml --namespace default kps prometheus-community/kube-prometheus-stack
+1) Helmchart install:
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade --install -f kps-values.yaml --namespace default kps prometheus-community/kube-prometheus-stack
 2) some scrapes are not functioonal after installation
 - kube proxy:
 $ kubectl edit cm/kube-proxy -n kube-system
@@ -8,7 +10,22 @@ metricsBindAddress: 0.0.0.0:10249
 ...
 $ kubectl delete pod -l k8s-app=kube-proxy -n kube-system
 
-- etcd ?
-- kube-controller-manager ?
-- kube-scheduler ?
+Solution for etcd, kube-controller-manager, kube-scheduler 
+- https://gist.github.com/SpoddyCoder/ff0ea39260b0d4acdb8b482532d4c1af
 
+  Docker-desktop runs inside a virtual machine, to be able to edit the cluster manifest files we must shell into the host using nsenter;
+
+    docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
+    cd /etc/kubernetes/manifests
+
+    - Edit kube-controller-manager.yaml
+      bind-address=127.0.0.1 change to bind-address=0.0.0.0
+      Save + exit, wait for the pod to reload automatically
+    - Edit kube-scheduler.yaml
+      bind-address=127.0.0.1 change to bind-address=0.0.0.0
+      Save + exit, the pod should reload automatically
+    - Edit etcd.yaml
+      listen-metrics-urls=http://127.0.0.1:<port> change to listen-metrics-urls=http://127.0.0.1:<port>,http://<cluster IP>:2381 - you can find the cluster IP in the other settings in that same file
+      Save + exit - this will make the cluster unresponsive temporarily, wait a minute or two and it should come back with the pod restarted
+
+    NOTE: get cluster IP: kubectl get nodes -o wide --no-headers | awk -v OFS='\t\t' '{print $6}'

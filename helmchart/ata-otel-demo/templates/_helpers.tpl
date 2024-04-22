@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "panther-support-tool.name" -}}
+{{- define "ata-otel-demo.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "panther-support-tool.fullname" -}}
+{{- define "ata-otel-demo.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "panther-support-tool.chart" -}}
+{{- define "ata-otel-demo.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "panther-support-tool.labels" -}}
-helm.sh/chart: {{ include "panther-support-tool.chart" . }}
-{{ include "panther-support-tool.selectorLabels" . }}
+{{- define "ata-otel-demo.labels" -}}
+helm.sh/chart: {{ include "ata-otel-demo.chart" . }}
+{{ include "ata-otel-demo.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "panther-support-tool.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "panther-support-tool.name" . }}
+{{- define "ata-otel-demo.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "ata-otel-demo.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "panther-support-tool.serviceAccountName" -}}
+{{- define "ata-otel-demo.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "panther-support-tool.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "ata-otel-demo.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

@@ -8,4 +8,12 @@ install particular apps:
 - tempo
   - install helmcgart
   - add datasoiurce to grafana
-  - test sendin traces: otel-cli exec --service my-service --name "curl google" curl https://google.com
+  - test sendin traces:
+
+    brew tap equinix-labs/otel-cli
+    brew install otel-cli
+
+    kubectl port-forward tempo-distributor 4317:4317
+
+    export OTEL_EXPORTER_OTLP_ENDPOINT=localhost:4317
+    otel-cli exec --service my-service --name "curl google" curl https://google.com
